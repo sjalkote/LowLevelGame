@@ -9,7 +9,7 @@ An opportunity to do more with C++ by creating a game with SDL2. gotta love that
 ## 💻 Dev Environment
 
 > [!NOTE]
-> Some IDEs like Clion can import the project using the included `CMakeLists.txt` file.
+> Some IDEs like CLion can import the project using the included `CMakeLists.txt` file.
 
 ### 🍎 MacOS
 
