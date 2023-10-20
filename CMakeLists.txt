@@ -11,5 +11,3 @@ add_executable(LowLevelGame src/main.cpp)
 
 # Link SDL2 library to your project
 target_link_libraries(LowLevelGame PRIVATE SDL2::SDL2)
-
-
