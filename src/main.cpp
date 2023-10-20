@@ -74,7 +74,7 @@ int main(int argc, char* args[]) {
         SDL_WINDOWPOS_UNDEFINED, 
         SDL_WINDOWPOS_UNDEFINED, 
         SCREEN_WIDTH, SCREEN_HEIGHT,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_RESIZABLE
     );
 
     if (window == NULL) {
