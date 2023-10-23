@@ -1,7 +1,7 @@
 ### CUSTOM ###
 build/
 .DS_Store
-
+.vs/
 ### C++ ###
 # Prerequisites
 *.d
