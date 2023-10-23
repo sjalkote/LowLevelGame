@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.23)
 project(LowLevelGame)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_PREFIX_PATH F:/libs/SDL2)
+set(CMAKE_PREFIX_PATH "./include/SDL2")
 
 set(IMGUI_SOURCE_DIR "include/imgui")
 add_library(imgui

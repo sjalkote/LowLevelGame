@@ -2,6 +2,11 @@
 build/
 .DS_Store
 .vs/
+include/*
+.cache/
+.vscode/
+imgui.ini
+
 ### C++ ###
 # Prerequisites
 *.d
