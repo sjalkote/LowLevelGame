@@ -17,6 +17,13 @@ int SCREEN_HEIGHT = 1080 / 2;
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 
+// User settings
+struct Settings {
+    bool showFPS = true;
+    bool vsync = true;
+};
+Settings settings;
+
 // TODO: Move to diff file, this is getting messy rq
 void handleInput(const Uint8* keyPressed)
 {
@@ -42,17 +49,20 @@ void update() {
     // TODO: move debug menu to diff file
     // Start ImGui frame
     ImGui_ImplSDLRenderer2_NewFrame();
+    ImGui_ImplSDL2_NewFrame(window);
     ImGui::NewFrame();
-    static bool showFPS = true;
-    static bool vsync = true;
 
     ImGui::Begin("Settings");
     // Add settings menu items here
-    ImGui::Checkbox("VSync", &vsync);
-    ImGui::Checkbox("Show FPS", &showFPS); // TODO: Implement vsync logic
+    if (ImGui::Checkbox("VSync", &settings.vsync))
+    {
+        std::cout << "VSync: " << (settings.vsync ? "ON" : "OFF") << std::endl;
+        SDL_RenderSetVSync(renderer, settings.vsync ? SDL_TRUE : SDL_FALSE);
+    }
+    ImGui::Checkbox("Show FPS", &settings.showFPS);
     ImGui::End();
 
-    if (showFPS) {
+    if (settings.showFPS) {
         ImGui::SetNextWindowPos(ImVec2(5, 5));
         ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
@@ -111,6 +121,7 @@ void quit()
 // Usage: ./LowLevelGame
 int main(int argc, char* args[]) {
     cout << "Starting...\n";
+
     // Initialize SDL, window, renderer, etc.
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         std::cerr << "Error initializing SDL: " << SDL_GetError() << "\n";
@@ -134,7 +145,7 @@ int main(int argc, char* args[]) {
     SDL_SetWindowTitle(window, "LowLevelGame");
 
     // Create renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | (settings.vsync ? SDL_RENDERER_PRESENTVSYNC : 0));
     if (!renderer) {
         std::cerr << "Error creating renderer: " << SDL_GetError() << "\n";
         return EXIT_FAILURE;
