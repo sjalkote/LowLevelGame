@@ -53,7 +53,7 @@ void update() {
     // Add settings menu items here
     if (ImGui::Checkbox("VSync", &settings.vsync)) {
         std::cout << "VSync: " << (settings.vsync ? "ON" : "OFF") << "\n";
-        SDL_RenderSetVSync(renderer, settings.vsync ? SDL_TRUE : SDL_FALSE);
+        SDL_GL_SetSwapInterval(static_cast<int>(settings.vsync));
     }
     ImGui::Checkbox("Show FPS", &settings.showFPS);
     ImGui::SliderInt("FPS Limit", &settings.fpsLimit, 1, 250);
