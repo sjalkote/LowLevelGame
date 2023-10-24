@@ -14,8 +14,7 @@ An opportunity to do more with C++ by creating a game with SDL2. gotta love that
 ### 🍎 MacOS
 
 - `brew install sdl2` — Install libraries with Homebrew.
-
-That should be it, the included `CMakeLists.txt` will find the libraries in `/opt/homebrew/Cellar/sdl2/`.
+- `ln -s /opt/homebrew/Cellar/sdl2/2.28.4 ./include/sdl2` — Link the SDL2 headers to the project.
 
 > [!IMPORTANT]
 > You may need to modify the path to `/usr/local/bin/brew` if you are on an Intel Mac.
