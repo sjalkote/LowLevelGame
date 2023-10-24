@@ -21,8 +21,7 @@ SDL_Renderer* renderer = nullptr;
 struct Settings {
     bool showFPS = true;
     bool vsync = true;
-};
-static Settings settings;
+} settings;
 
 // TODO: Move to diff file, this is getting messy rq
 void handleInput(const Uint8* keyPressed)
