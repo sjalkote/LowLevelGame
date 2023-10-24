@@ -91,7 +91,7 @@ void update() {
 
     float aspectRatio = 800.0f / 600.0f;
     float fov = 45.0f;
-    float zNear = 1.0f;
+    float zNear = 0.1f;
     float zFar = 100.0f;
 
     float top = zNear * std::tan(fov * 0.5f * 3.14159265f / 180.0f);
@@ -106,6 +106,7 @@ void update() {
     glTranslatef(0.0f, 0.0f, -5.0f);
     glRotatef(g_rotation_angle, 1.0f, 1.0f, 1.0f);
 
+    glEnable(GL_DEPTH_TEST);
     glBegin(GL_QUADS);
 
 
@@ -136,8 +137,6 @@ void update() {
     glEnd();
 
     g_rotation_angle += 0.5f;
-
-
 
     // Draw
 
