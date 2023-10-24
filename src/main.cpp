@@ -1,3 +1,4 @@
+#include <SDL_video.h>
 #include <iostream>
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
@@ -18,6 +19,7 @@ struct Settings {
     bool showFPS = true;
     bool vsync = true;
     int fpsLimit = 60;
+    bool fullscreen = false;
 } settings;
 
 // TODO: Move to diff file, this is getting messy rq
@@ -40,7 +42,6 @@ void handleInput(const Uint8* keyPressed) {
 }
 
 void update() {
-
     // TODO: move debug menu to diff file
     // Start ImGui frame
     ImGui_ImplSDLRenderer2_NewFrame();
@@ -55,6 +56,7 @@ void update() {
     }
     ImGui::Checkbox("Show FPS", &settings.showFPS);
     ImGui::SliderInt("FPS Limit", &settings.fpsLimit, 1, 250);
+    ImGui::Checkbox("Fullscreen", &settings.fullscreen);
     ImGui::End();
 
     static Uint32 lastFrame = 0;
@@ -70,13 +72,14 @@ void update() {
         lastFrame = currentFrame;
     }
 
-
     if (settings.showFPS) {
         ImGui::SetNextWindowPos(ImVec2(5, 5));
         ImGui::Begin("FPS", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
         ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
         ImGui::End();
     }
+
+    SDL_SetWindowFullscreen(window, settings.fullscreen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 
     const Uint8* keyPressed = SDL_GetKeyboardState(nullptr);
     handleInput(keyPressed);
@@ -158,7 +161,7 @@ int main(int argc, char* args[]) {
         return EXIT_FAILURE;
     }
 
-    std::cout << "Window and renderer init successful.";
+    std::cout << "Window and renderer init successful.\n";
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -168,7 +171,7 @@ int main(int argc, char* args[]) {
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 
     if (!ImGui::GetCurrentContext()) {
-        std::cout << "Unable to create Context";
+        std::cout << "Unable to create Context\n";
     }
 
     // Keep the window open until the user closes it (we will receive a close event)
