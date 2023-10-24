@@ -3,7 +3,8 @@
 #include "SDL.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
-#include "imgui_impl_sdlrenderer2.h"
+#include "imgui_impl_opengl3.h"
+#include "SDL_opengl.h"
 
 // Screen dimension constants
 int SCREEN_WIDTH = 1920 / 2;
@@ -43,8 +44,9 @@ void handleInput(const Uint8* keyPressed) {
 void update() {
     // TODO: move debug menu to diff file
     // Start ImGui frame
-    ImGui_ImplSDLRenderer2_NewFrame();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     ImGui_ImplSDL2_NewFrame(window);
+    ImGui_ImplOpenGL3_NewFrame();
     ImGui::NewFrame();
 
     ImGui::Begin("Settings");
@@ -83,42 +85,71 @@ void update() {
     const Uint8* keyPressed = SDL_GetKeyboardState(nullptr);
     handleInput(keyPressed);
 
-    // RENDERING STUFF
-    SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-    SDL_RenderClear(renderer);
+    static float g_rotation_angle = 0.0f;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
 
-    // Update screen size variables if the window was resized
-    SDL_GetWindowSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
+    float aspectRatio = 800.0f / 600.0f;
+    float fov = 45.0f;
+    float zNear = 1.0f;
+    float zFar = 100.0f;
 
-    const int region1 = SCREEN_WIDTH / 3;
-    const int region2 = region1 * 2;
-    const int region3 = SCREEN_WIDTH;
+    float top = zNear * std::tan(fov * 0.5f * 3.14159265f / 180.0f);
+    float bottom = -top;
+    float right = top * aspectRatio;
+    float left = -right;
 
-    // slowly draw a line across the screen
-    static int x = 0;
-    // Cycle through RGB colors on each render
-    static int r, g, b = 0;
-    if (x == 0) r = g = b = 0;
-    else if (x < region1) r += r >= 255 ? 0 : 1;
-    else if (x < region2) g += g >= 255 ? 0 : 1;
-    else if (x < region3) b += b >= 255 ? 0 : 1;
-    SDL_SetRenderDrawColor(renderer, r, g, b, 0xFF);
+    glFrustum(left, right, bottom, top, zNear, zFar);
 
-    // Draw a new line every render.
-    for (int i = 1; i <= x; i++) {
-        SDL_RenderDrawLine(renderer, x - i, 0, x - i, SCREEN_HEIGHT);
-    }
-    x = x > SCREEN_WIDTH ? 0 : x + 1;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0f, 0.0f, -5.0f);
+    glRotatef(g_rotation_angle, 1.0f, 1.0f, 1.0f);
+
+    glBegin(GL_QUADS);
+
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 1.0f);
+    glVertex3f(1.0f, 1.0f, 1.0f);
+    glVertex3f(-1.0f, 1.0f, 1.0f);
+
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);
+    glVertex3f(1.0f, -1.0f, -1.0f);
+    glVertex3f(1.0f, 1.0f, -1.0f);
+    glVertex3f(-1.0f, 1.0f, -1.0f);
+
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, -1.0f);
+    glVertex3f(1.0f, 1.0f, -1.0f);
+    glVertex3f(1.0f, 1.0f, 1.0f);
+    glVertex3f(1.0f, -1.0f, 1.0f);
+
+    glColor3f(1.0f, 1.0f, 0.0f);
+    glVertex3f(-1.0f, -1.0f, -1.0f);
+    glVertex3f(-1.0f, 1.0f, -1.0f);
+    glVertex3f(-1.0f, 1.0f, 1.0f);
+    glVertex3f(-1.0f, -1.0f, 1.0f);
+
+    glEnd();
+
+    g_rotation_angle += 0.5f;
+
+
 
     // Draw
+
     ImGui::Render();
-    ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    SDL_GL_SwapWindow(window);
     SDL_RenderPresent(renderer);
 }
 
 void quit() {
     std::cout << "Exiting...\n";
-    ImGui_ImplSDLRenderer2_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
     ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
     renderer = nullptr;
@@ -144,8 +175,14 @@ int main(int argc, char* args[]) {
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         SCREEN_WIDTH, SCREEN_HEIGHT,
-        SDL_WINDOW_RESIZABLE
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL
     );
+    SDL_GLContext glContext = SDL_GL_CreateContext(window);
+    if (!glContext) {
+        std::cerr << "Error creating OpenGL context: " << SDL_GetError() << "\n";
+        return EXIT_FAILURE;
+    }
+    SDL_GL_MakeCurrent(window, glContext);
 
     if (!window) {
         std::cerr << "Error creating window: " << SDL_GetError() << "\n";
@@ -166,8 +203,8 @@ int main(int argc, char* args[]) {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     io.DisplaySize = ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-    ImGui_ImplSDLRenderer2_Init(renderer);
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
+    ImGui_ImplSDL2_InitForOpenGL(window, glContext);
+    ImGui_ImplOpenGL3_Init();
 
     if (!ImGui::GetCurrentContext()) {
         std::cout << "Unable to create Context\n";
