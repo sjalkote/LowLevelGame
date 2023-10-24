@@ -3,7 +3,6 @@ project(LowLevelGame)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_PREFIX_PATH "./include/SDL2")
-set(CMAKE_PREFIX_PATH /opt/homebrew/Cellar/sdl2/2.28.4)
 
 set(IMGUI_SOURCE_DIR "include/imgui")
 add_library(imgui
