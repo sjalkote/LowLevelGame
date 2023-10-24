@@ -5,10 +5,6 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_sdlrenderer2.h"
 
-using std::cout;
-using std::endl;
-using std::string;
-
 // Screen dimension constants
 int SCREEN_WIDTH = 1920 / 2;
 int SCREEN_HEIGHT = 1080 / 2;
@@ -24,22 +20,21 @@ struct Settings {
 } settings;
 
 // TODO: Move to diff file, this is getting messy rq
-void handleInput(const Uint8* keyPressed)
-{
+void handleInput(const Uint8* keyPressed) {
     if (keyPressed[SDL_SCANCODE_UP] || keyPressed[SDL_SCANCODE_W]) { // UP
-        cout << "UP" << endl;
+        std::cout << "UP\n";
     }
     else if (keyPressed[SDL_SCANCODE_DOWN] || keyPressed[SDL_SCANCODE_S]) { // DOWN
-        cout << "DOWN" << endl;
+        std::cout << "DOWN\n";
     }
     else if (keyPressed[SDL_SCANCODE_LEFT] || keyPressed[SDL_SCANCODE_A]) { // LEFT
-        cout << "LEFT" << endl;
+        std::cout << "LEFT\n";
     }
     else if (keyPressed[SDL_SCANCODE_RIGHT] || keyPressed[SDL_SCANCODE_D]) { // RIGHT
-        cout << "RIGHT" << endl;
+        std::cout << "RIGHT\n";
     }
     else if (keyPressed[SDL_SCANCODE_SPACE]) { // JUMP
-        cout << "JUMP" << endl;
+        std::cout << "JUMP\n";
     }
 }
 
@@ -53,9 +48,8 @@ void update() {
 
     ImGui::Begin("Settings");
     // Add settings menu items here
-    if (ImGui::Checkbox("VSync", &settings.vsync))
-    {
-        std::cout << "VSync: " << (settings.vsync ? "ON" : "OFF") << std::endl;
+    if (ImGui::Checkbox("VSync", &settings.vsync)) {
+        std::cout << "VSync: " << (settings.vsync ? "ON" : "OFF") << "\n";
         SDL_RenderSetVSync(renderer, settings.vsync ? SDL_TRUE : SDL_FALSE);
     }
     ImGui::Checkbox("Show FPS", &settings.showFPS);
@@ -100,14 +94,12 @@ void update() {
 
     // Draw
     ImGui::Render();
-    SDL_RenderClear(renderer); // Clear the SDL renderer before rendering ImGui
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
-    SDL_RenderPresent(renderer); // Present the rendered ImGui frame
+    SDL_RenderPresent(renderer);
 }
 
-void quit()
-{
-    cout << "Exiting...\n";
+void quit() {
+    std::cout << "Exiting...\n";
     ImGui_ImplSDLRenderer2_Shutdown();
     ImGui::DestroyContext();
     SDL_DestroyRenderer(renderer);
@@ -119,14 +111,14 @@ void quit()
 
 // Usage: ./LowLevelGame
 int main(int argc, char* args[]) {
-    cout << "Starting...\n";
+    std::cout << "Starting...\n";
 
     // Initialize SDL, window, renderer, etc.
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
         std::cerr << "Error initializing SDL: " << SDL_GetError() << "\n";
         return EXIT_FAILURE;
     }
-    cout << "SDL init successful.\n";
+    std::cout << "SDL init successful.\n";
 
     // Create window
     window = SDL_CreateWindow(
@@ -150,8 +142,7 @@ int main(int argc, char* args[]) {
         return EXIT_FAILURE;
     }
 
-    cout << "Window and renderer init successful.";
-
+    std::cout << "Window and renderer init successful.";
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
@@ -161,7 +152,7 @@ int main(int argc, char* args[]) {
     ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
 
     if (!ImGui::GetCurrentContext()) {
-        cout << "Unable to create Context";
+        std::cout << "Unable to create Context";
     }
 
     // Keep the window open until the user closes it (we will receive a close event)
