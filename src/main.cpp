@@ -17,6 +17,7 @@ SDL_Renderer* renderer = nullptr;
 struct Settings {
     bool showFPS = true;
     bool vsync = true;
+    int fpsLimit = 60;
 } settings;
 
 // TODO: Move to diff file, this is getting messy rq
@@ -53,7 +54,22 @@ void update() {
         SDL_RenderSetVSync(renderer, settings.vsync ? SDL_TRUE : SDL_FALSE);
     }
     ImGui::Checkbox("Show FPS", &settings.showFPS);
+    ImGui::SliderInt("FPS Limit", &settings.fpsLimit, 1, 250);
     ImGui::End();
+
+    static Uint32 lastFrame = 0;
+    Uint32 currentFrame = SDL_GetTicks();
+    float deltaTime = (currentFrame - lastFrame) / 1000.0f;
+    lastFrame = currentFrame;
+
+    float frameTime = 1.0f / settings.fpsLimit;
+    if (deltaTime < frameTime) {
+        SDL_Delay((Uint32)((frameTime - deltaTime) * 1000.0f));
+        currentFrame = SDL_GetTicks();
+        deltaTime = (currentFrame - lastFrame) / 1000.0f;
+        lastFrame = currentFrame;
+    }
+
 
     if (settings.showFPS) {
         ImGui::SetNextWindowPos(ImVec2(5, 5));
