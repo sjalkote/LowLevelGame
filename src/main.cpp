@@ -1,4 +1,3 @@
-#include <SDL_video.h>
 #include <iostream>
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
