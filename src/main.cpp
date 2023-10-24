@@ -22,7 +22,7 @@ struct Settings {
     bool showFPS = true;
     bool vsync = true;
 };
-Settings settings;
+static Settings settings;
 
 // TODO: Move to diff file, this is getting messy rq
 void handleInput(const Uint8* keyPressed)
