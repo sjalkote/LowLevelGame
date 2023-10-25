@@ -3,7 +3,10 @@
 #include "SDL.h"
 #include "SDL_opengl.h"
 
-void handleInput(const Uint8* keyPressed) {
+void handleInput(const Uint8 *keyPressed) {
+    
+
+  
     if (keyPressed[SDL_SCANCODE_UP] || keyPressed[SDL_SCANCODE_W]) { // UP
         std::cout << "UP\n";
     }

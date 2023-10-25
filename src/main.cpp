@@ -198,7 +198,7 @@ int main(int argc, char* args[]) {
     bool shouldQuit = false;
     while (!shouldQuit) {
         while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) shouldQuit = true;
+            if (e.type == SDL_QUIT || (e.type == SDL_KEYDOWN && e.key.keysym.sym == SDLK_ESCAPE)) shouldQuit = true;
             if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
                 SCREEN_WIDTH = e.window.data1;
                 SCREEN_HEIGHT = e.window.data2;
