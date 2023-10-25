@@ -5,6 +5,7 @@
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "SDL_opengl.h"
+#include "handlers.h"
 
 // Screen dimension constants
 int SCREEN_WIDTH = 1920 / 2;
@@ -22,24 +23,6 @@ struct Settings {
     bool fullscreen = false;
 } settings;
 
-// TODO: Move to diff file, this is getting messy rq
-void handleInput(const Uint8* keyPressed) {
-    if (keyPressed[SDL_SCANCODE_UP] || keyPressed[SDL_SCANCODE_W]) { // UP
-        std::cout << "UP\n";
-    }
-    else if (keyPressed[SDL_SCANCODE_DOWN] || keyPressed[SDL_SCANCODE_S]) { // DOWN
-        std::cout << "DOWN\n";
-    }
-    else if (keyPressed[SDL_SCANCODE_LEFT] || keyPressed[SDL_SCANCODE_A]) { // LEFT
-        std::cout << "LEFT\n";
-    }
-    else if (keyPressed[SDL_SCANCODE_RIGHT] || keyPressed[SDL_SCANCODE_D]) { // RIGHT
-        std::cout << "RIGHT\n";
-    }
-    else if (keyPressed[SDL_SCANCODE_SPACE]) { // JUMP
-        std::cout << "JUMP\n";
-    }
-}
 
 void update() {
     // TODO: move debug menu to diff file
@@ -146,6 +129,7 @@ void update() {
     //SDL_RenderPresent(renderer);
 }
 
+
 void quit() {
     std::cout << "Exiting...\n";
     ImGui_ImplOpenGL3_Shutdown();
@@ -215,6 +199,11 @@ int main(int argc, char* args[]) {
     while (!shouldQuit) {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) shouldQuit = true;
+            if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_RESIZED) {
+                SCREEN_WIDTH = e.window.data1;
+                SCREEN_HEIGHT = e.window.data2;
+                handleResize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            }
             ImGui_ImplSDL2_ProcessEvent(&e);
         }
         update();
