@@ -72,7 +72,7 @@ void update() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    float aspectRatio = 800.0f / 600.0f;
+    float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
     float fov = 45.0f;
     float zNear = 0.1f;
     float zFar = 100.0f;
