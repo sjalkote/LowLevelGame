@@ -1,25 +1,6 @@
 #include <iostream>
 #define SDL_MAIN_HANDLED
-#include "SDL.h"
-#include "imgui.h"
-#include "imgui_impl_sdl2.h"
-#include "imgui_impl_sdlrenderer2.h"
-
-// Screen dimension constants
-int SCREEN_WIDTH = 1920 / 2;
-int SCREEN_HEIGHT = 1080 / 2;
-
-// Window and Renderer
-SDL_Window* window = nullptr;
-SDL_Renderer* renderer = nullptr;
-
-// User settings
-struct Settings {
-    bool showFPS = true;
-    bool vsync = true;
-    int fpsLimit = 60;
-    bool fullscreen = false;
-} settings;
+#include "game_controller.h"
 
 // TODO: Move to diff file, this is getting messy rq
 void handleInput(const Uint8* keyPressed) {
@@ -40,7 +21,7 @@ void handleInput(const Uint8* keyPressed) {
     }
 }
 
-void update() {
+/* void update() {
     // TODO: move debug menu to diff file
     // Start ImGui frame
     ImGui_ImplSDLRenderer2_NewFrame();
@@ -115,74 +96,23 @@ void update() {
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData());
     SDL_RenderPresent(renderer);
 }
+*/
 
-void quit() {
-    std::cout << "Exiting...\n";
-    ImGui_ImplSDLRenderer2_Shutdown();
-    ImGui::DestroyContext();
-    SDL_DestroyRenderer(renderer);
-    renderer = nullptr;
-    SDL_DestroyWindow(window);
-    window = nullptr;
-    SDL_Quit();
-}
-
-// Usage: ./LowLevelGame
+// Usage: ./LowLevelGame [name]
 int main(int argc, char* args[]) {
-    std::cout << "Starting...\n";
 
-    // Initialize SDL, window, renderer, etc.
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        std::cerr << "Error initializing SDL: " << SDL_GetError() << "\n";
-        return EXIT_FAILURE;
-    }
-    std::cout << "SDL init successful.\n";
 
     // Create window
-    window = SDL_CreateWindow(
-        "LowLevelGame",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        SCREEN_WIDTH, SCREEN_HEIGHT,
-        SDL_WINDOW_RESIZABLE
-    );
-
-    if (!window) {
-        std::cerr << "Error creating window: " << SDL_GetError() << "\n";
+    GameController gc = GameController(argc, args, true);
+    if (!gc.init()) {
         return EXIT_FAILURE;
     }
-    SDL_SetWindowTitle(window, "LowLevelGame");
-
-    // Create renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | (settings.vsync ? SDL_RENDERER_PRESENTVSYNC : 0));
-    if (!renderer) {
-        std::cerr << "Error creating renderer: " << SDL_GetError() << "\n";
-        return EXIT_FAILURE;
-    }
-
-    std::cout << "Window and renderer init successful.\n";
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-    ImGui_ImplSDLRenderer2_Init(renderer);
-    ImGui_ImplSDL2_InitForSDLRenderer(window, renderer);
-
-    if (!ImGui::GetCurrentContext()) {
-        std::cout << "Unable to create Context\n";
-    }
-
+    
     // Keep the window open until the user closes it (we will receive a close event)
-    SDL_Event e;
-    bool shouldQuit = false;
-    while (!shouldQuit) {
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) shouldQuit = true;
-            ImGui_ImplSDL2_ProcessEvent(&e);
-        }
-        update();
+    while (gc.isRunning) {
+        gc.update();
     }
-    quit();
+    
+    gc.quit();
     return EXIT_SUCCESS;
 }
