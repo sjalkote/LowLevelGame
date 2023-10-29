@@ -13,7 +13,7 @@ add_library(imgui
     ${IMGUI_SOURCE_DIR}/imgui_widgets.cpp
     ${IMGUI_SOURCE_DIR}/imgui_tables.cpp
     ${IMGUI_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
-    ${IMGUI_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+    ${IMGUI_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
 
     # Include other source files if necessary
 )
@@ -22,8 +22,10 @@ target_include_directories(imgui PUBLIC ${IMGUI_SOURCE_DIR} ${IMGUI_SOURCE_DIR}/
 find_package(SDL2 REQUIRED)
 
 # Add your project source files
-add_executable(LowLevelGame src/main.cpp)
+add_executable(LowLevelGame src/main.cpp src/handlers.cpp)
 
 # Link SDL2 library to your project
-target_link_libraries(LowLevelGame PRIVATE imgui SDL2::SDL2)
+target_link_libraries(LowLevelGame PRIVATE imgui SDL2::SDL2) 
 target_include_directories(imgui PUBLIC ${SDL2_INCLUDE_DIRS})
+find_package(OpenGL REQUIRED)
+target_link_libraries(LowLevelGame PRIVATE OpenGL::GL)
