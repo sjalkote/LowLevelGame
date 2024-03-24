@@ -4,9 +4,6 @@
 #include "SDL_opengl.h"
 
 void handleInput(const Uint8 *keyPressed) {
-    
-
-  
     if (keyPressed[SDL_SCANCODE_UP] || keyPressed[SDL_SCANCODE_W]) { // UP
         std::cout << "UP\n";
     }
@@ -24,8 +21,7 @@ void handleInput(const Uint8 *keyPressed) {
     }
 }
 
-void handleResize(int w, int h)
-{
+void handleResize(int w, int h) {
     glViewport(0, 0, w, h);
 
     // Set the projection matrix
