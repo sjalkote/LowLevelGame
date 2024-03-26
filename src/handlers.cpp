@@ -1,11 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include <unordered_map>
 #include "SDL.h"
 #include "SDL_opengl.h"
 #include "handlers.h"
-
 
 enum class Action {
     Up,
