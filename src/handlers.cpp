@@ -13,7 +13,7 @@ enum class Action {
     Jump
 };
 
-void processKeyboardInput(const Uint8* keyPressed) {
+void handleInput(const Uint8* keyPressed) {
     static const std::vector<std::pair<SDL_Scancode, Action>> keyMappings = {
         {SDL_SCANCODE_UP, Action::Up},
         {SDL_SCANCODE_W, Action::Up},

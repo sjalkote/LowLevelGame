@@ -1,11 +1,12 @@
-#include <iostream>
 #define SDL_MAIN_HANDLED
+#include <iostream>
 #include "SDL.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl3.h"
 #include "SDL_opengl.h"
 #include "handlers.h"
+#include "objloader.h"
 
 // Screen dimension constants
 int SCREEN_WIDTH = 1920 / 2;
@@ -14,6 +15,9 @@ int SCREEN_HEIGHT = 1080 / 2;
 // Window and Renderer
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
+
+// executable is in ./cmake-build-debug
+ObjAsset asset = ObjAsset("../src/assets/monkey.obj");
 
 // User settings
 struct Settings {
@@ -67,68 +71,14 @@ void update() {
 
     const Uint8* keyPressed = SDL_GetKeyboardState(nullptr);
     handleInput(keyPressed);
-
-    static float g_rotation_angle = 0.0f;
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    float aspectRatio = (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT;
-    float fov = 45.0f;
-    float zNear = 0.1f;
-    float zFar = 100.0f;
-
-    float top = zNear * std::tan(fov * 0.5f * 3.14159265f / 180.0f);
-    float bottom = -top;
-    float right = top * aspectRatio;
-    float left = -right;
-
-    glFrustum(left, right, bottom, top, zNear, zFar);
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glTranslatef(0.0f, 0.0f, -5.0f);
-    glRotatef(g_rotation_angle, 1.0f, 1.0f, 1.0f);
-
-    glEnable(GL_DEPTH_TEST);
-    glBegin(GL_QUADS);
-
-
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-
-    glColor3f(0.0f, 1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-
-    glColor3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, -1.0f);
-    glVertex3f(1.0f, 1.0f, 1.0f);
-    glVertex3f(1.0f, -1.0f, 1.0f);
-
-    glColor3f(1.0f, 1.0f, 0.0f);
-    glVertex3f(-1.0f, -1.0f, -1.0f);
-    glVertex3f(-1.0f, 1.0f, -1.0f);
-    glVertex3f(-1.0f, 1.0f, 1.0f);
-    glVertex3f(-1.0f, -1.0f, 1.0f);
-
-    glEnd();
-
-    g_rotation_angle += 0.5f;
+    asset.Render();
 
     // Draw
-
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(window);
     //SDL_RenderPresent(renderer);
 }
-
 
 void quit() {
     std::cout << "Exiting...\n";
@@ -179,7 +129,6 @@ int main(int argc, char* args[]) {
         std::cerr << "Error creating renderer: " << SDL_GetError() << "\n";
         return EXIT_FAILURE;
     }
-
     std::cout << "Window and renderer init successful.\n";
 
     IMGUI_CHECKVERSION();
