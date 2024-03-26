@@ -1,7 +1,8 @@
-#include "handlers.h"
 #include <iostream>
+#include <cmath>
 #include "SDL.h"
 #include "SDL_opengl.h"
+#include "handlers.h"
 
 void handleInput(const Uint8 *keyPressed) {
     if (keyPressed[SDL_SCANCODE_UP] || keyPressed[SDL_SCANCODE_W]) { // UP
