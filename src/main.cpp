@@ -3,9 +3,7 @@
 #include "SDL.h"
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
-#include "imgui_impl_opengl3.h"
-#include "SDL_opengl.h"
-#include "handlers.h"
+#include "imgui_impl_sdlrenderer2.h"
 
 // Screen dimension constants
 int SCREEN_WIDTH = 1920 / 2;
@@ -129,70 +127,16 @@ void update() {
     //SDL_RenderPresent(renderer);
 }
 
-
-void quit() {
-    std::cout << "Exiting...\n";
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui::DestroyContext();
-    SDL_DestroyRenderer(renderer);
-    renderer = nullptr;
-    SDL_DestroyWindow(window);
-    window = nullptr;
-    SDL_Quit();
-}
-
-// Usage: ./LowLevelGame
+// Usage: ./LowLevelGame [name]
 int main(int argc, char* args[]) {
-    std::cout << "Starting...\n";
 
-    // Initialize SDL, window, renderer, etc.
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
-        std::cerr << "Error initializing SDL: " << SDL_GetError() << "\n";
-        return EXIT_FAILURE;
-    }
-    std::cout << "SDL init successful.\n";
 
     // Create window
-    window = SDL_CreateWindow(
-        "LowLevelGame",
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        SCREEN_WIDTH, SCREEN_HEIGHT,
-        SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL
-    );
-    SDL_GLContext glContext = SDL_GL_CreateContext(window);
-    if (!glContext) {
-        std::cerr << "Error creating OpenGL context: " << SDL_GetError() << "\n";
+    GameController gc = GameController(argc, args, true);
+    if (!gc.init()) {
         return EXIT_FAILURE;
     }
-    SDL_GL_MakeCurrent(window, glContext);
-
-    if (!window) {
-        std::cerr << "Error creating window: " << SDL_GetError() << "\n";
-        return EXIT_FAILURE;
-    }
-    SDL_SetWindowTitle(window, "LowLevelGame");
-
-    // Create renderer
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | (settings.vsync ? SDL_RENDERER_PRESENTVSYNC : 0));
-    if (!renderer) {
-        std::cerr << "Error creating renderer: " << SDL_GetError() << "\n";
-        return EXIT_FAILURE;
-    }
-
-    std::cout << "Window and renderer init successful.\n";
-
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize = ImVec2(SCREEN_WIDTH, SCREEN_HEIGHT);
-    ImGui_ImplSDL2_InitForOpenGL(window, glContext);
-    ImGui_ImplOpenGL3_Init();
-
-    if (!ImGui::GetCurrentContext()) {
-        std::cout << "Unable to create Context\n";
-    }
-
+    
     // Keep the window open until the user closes it (we will receive a close event)
     SDL_Event e;
     bool shouldQuit = false;
@@ -208,6 +152,7 @@ int main(int argc, char* args[]) {
         }
         update();
     }
-    quit();
+    
+    gc.quit();
     return EXIT_SUCCESS;
 }

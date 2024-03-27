@@ -22,7 +22,7 @@ target_include_directories(imgui PUBLIC ${IMGUI_SOURCE_DIR} ${IMGUI_SOURCE_DIR}/
 find_package(SDL2 REQUIRED)
 
 # Add your project source files
-add_executable(LowLevelGame src/main.cpp src/handlers.cpp)
+add_executable(LowLevelGame src/main.cpp src/handlers.cpp src/game_controller.cpp src/window.cpp src/utils.cpp)
 
 # Link SDL2 library to your project
 target_link_libraries(LowLevelGame PRIVATE imgui SDL2::SDL2) 
